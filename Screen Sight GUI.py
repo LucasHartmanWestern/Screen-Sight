@@ -17,7 +17,6 @@ while scrcpy_window is None:
 def lerp(start, end, alpha):
     return (1 - alpha) * start + alpha * end
 
-
 def interpolate_boxes(start_box, end_box, num_frames):
     interpolated_boxes = []
     for frame in range(num_frames):
@@ -31,75 +30,57 @@ def interpolate_boxes(start_box, end_box, num_frames):
         interpolated_boxes.append(interpolated_box)
     return interpolated_boxes
 
-
 def draw_phone_screen(frame, interpolated_box):
-    # Capture the scrcpy window
     global scrcpy_window, show
-
     if not show: return
-
-    # Extract the width, height, and top-left corner coordinates of the box
     box_w = int(interpolated_box['w'])
     box_h = int(interpolated_box['h'])
     x = int(interpolated_box['x'])
     y = int(interpolated_box['y'])
-
     left, top, width, height = scrcpy_window.box
     bbox = (left, top, left + width, top + height)
     screenshot = ImageGrab.grab(bbox)
     scrcpy_frame = np.array(screenshot)
     scrcpy_frame = cv2.cvtColor(scrcpy_frame, cv2.COLOR_RGB2BGR)
-
-    # Calculate the aspect ratio of the phone screen
     aspect_ratio = width / height
-
-    # Calculate new dimensions for the phone screen that preserve the aspect ratio
-    # and fit within the bounding box
     if box_w / box_h > aspect_ratio:
-        # If the bounding box is wider than the aspect ratio, adjust the width
         new_w = int(box_h * aspect_ratio)
         new_h = box_h
     else:
-        # If the bounding box is taller than the aspect ratio, adjust the height
         new_w = box_w
         new_h = int(box_w / aspect_ratio)
-
-    # Resize the captured phone screen to the new dimensions
     resized_phone_screen = cv2.resize(scrcpy_frame, (new_w, new_h))
-
-    # Calculate the position to center the resized phone screen within the bounding box
     center_x = x + (box_w - new_w) // 2
     center_y = y + (box_h - new_h) // 2
-
-    # Overlay the resized phone screen onto the frame at the centered position
     frame[center_y:center_y + new_h, center_x:center_x + new_w] = resized_phone_screen
 
 def toggle_show():
     global show
     show = not show
-    button_text.set("Hide Phone" if show else "Show Phone")
+
+def mouse_callback(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        if 10 <= x <= 110 and 10 <= y <= 50:
+            toggle_show()
 
 def main():
-    frame_count = 0  # Initialize frame counter to track when to update visually.
-    last_visual_detection = None  # The last detection that was visually updated.
-    current_visual_detection = None  # The current target for visual updating.
-    update_interval = 3  # Number of frames over which to interpolate after a new detection.
-
-    # Load the YOLO model for object detection.
+    frame_count = 0
+    last_visual_detection = None
+    current_visual_detection = None
+    update_interval = 3
     model = YOLO("yolov8l.pt")
 
-    for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True, hide_labels=True):
-        frame = result.orig_img  # Get the original image frame from the result.
+    cv2.namedWindow('Frame')
+    cv2.setMouseCallback('Frame', mouse_callback)
 
-        # Convert the class IDs and bounding boxes to NumPy arrays
+    for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True, hide_labels=True):
+        frame = result.orig_img
         class_ids = result.boxes.cls.cpu().numpy().astype(int)
         boxes_xywh = result.boxes.xywh.cpu().numpy()
-
         new_detection = None
         for cls_id, box in zip(class_ids, boxes_xywh):
-            if cls_id == 67:  # Check if the class ID is 67 (e.g., for a specific object)
+            if cls_id == 67:
                 x, y, w, h = box
-                # Adjust x, y to be the top-left corner of the box
                 x -= w / 2
                 y -= h / 2
                 new_detection = {'w': w, 'h': h, 'x': x, 'y': y}
@@ -110,9 +91,8 @@ def main():
             current_visual_detection = new_detection
             frame_count = 0
         else:
-            # If no new detection, consider removing the visual detection after the update interval
             if frame_count >= update_interval:
-                current_visual_detection = None  # This will stop the box from being drawn
+                current_visual_detection = None
 
         if current_visual_detection:
             if frame_count < update_interval and last_visual_detection:
@@ -128,7 +108,9 @@ def main():
                 draw_phone_screen(frame, current_visual_detection)
             frame_count += 1
 
-        # Display the frame
+        button_text = "Hide Phone" if show else "Show Phone"
+        cv2.rectangle(frame, (10, 10), (110, 50), (255, 255, 255), -1)
+        cv2.putText(frame, button_text, (15, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
         cv2.imshow('Frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
