@@ -73,7 +73,7 @@ def main():
     cv2.namedWindow('Frame')
     cv2.setMouseCallback('Frame', mouse_callback)
 
-    for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True, hide_labels=True):
+    for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True):
         frame = result.orig_img
         class_ids = result.boxes.cls.cpu().numpy().astype(int)
         boxes_xywh = result.boxes.xywh.cpu().numpy()
