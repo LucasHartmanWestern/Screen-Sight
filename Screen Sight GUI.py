@@ -5,6 +5,7 @@ import pygetwindow as gw
 from PIL import ImageGrab
 import PhoneSensors
 import torch
+import math
 
 print(torch.__version__)
 print(torch.cuda.is_available())
@@ -40,7 +41,6 @@ def draw_phone_screen(frame, interpolated_box):
     if not show: return
 
     current_orientation = PhoneSensors.orientation
-    print("Phone orientation:", current_orientation)
 
     box_w = int(interpolated_box['w'])
     box_h = int(interpolated_box['h'])
@@ -51,17 +51,35 @@ def draw_phone_screen(frame, interpolated_box):
     screenshot = ImageGrab.grab(bbox)
     scrcpy_frame = np.array(screenshot)
     scrcpy_frame = cv2.cvtColor(scrcpy_frame, cv2.COLOR_RGB2BGR)
+
+    # Rotate the phone screen based on the orientation
+    rotation_angle = 90 - np.degrees(np.arctan2(current_orientation['y'], current_orientation['x']))
+    rotation_matrix = cv2.getRotationMatrix2D((width // 2, height // 2), rotation_angle, 1)
+    rotated_phone_screen = cv2.warpAffine(scrcpy_frame, rotation_matrix, (width, height))
+
+    # Calculate the size of the maximum bounding box
+    max_box_size = max(box_w, box_h)
+
+    # Resize the rotated phone screen to fit within the constant bounding box
     aspect_ratio = width / height
-    if box_w / box_h > aspect_ratio:
-        new_w = int(box_h * aspect_ratio)
-        new_h = box_h
+    if max_box_size / max_box_size > aspect_ratio:
+        new_w = int(max_box_size * aspect_ratio)
+        new_h = max_box_size
     else:
-        new_w = box_w
-        new_h = int(box_w / aspect_ratio)
-    resized_phone_screen = cv2.resize(scrcpy_frame, (new_w, new_h))
+        new_w = max_box_size
+        new_h = int(max_box_size / aspect_ratio)
+    resized_phone_screen = cv2.resize(rotated_phone_screen, (new_w, new_h))
+
+    # Update the position to ensure the resized overlay stays centered
     center_x = x + (box_w - new_w) // 2
     center_y = y + (box_h - new_h) // 2
-    frame[center_y:center_y + new_h, center_x:center_x + new_w] = resized_phone_screen
+
+    # Ensure the overlay is within the frame boundaries
+    x1, y1 = max(center_x, 0), max(center_y, 0)
+    x2, y2 = min(center_x + new_w, frame.shape[1]), min(center_y + new_h, frame.shape[0])
+    overlay = resized_phone_screen[y1 - center_y:y2 - center_y, x1 - center_x:x2 - center_x]
+
+    frame[y1:y2, x1:x2] = overlay
 
 def toggle_show():
     global show
