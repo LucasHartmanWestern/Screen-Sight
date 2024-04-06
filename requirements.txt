@@ -1,7 +1,7 @@
 opencv-python
-ultralytics-yolov5
+ultralytics
 numpy
 pygetwindow
 Pillow
 websocket-client
-threading
+thread
