@@ -36,9 +36,11 @@ def interpolate_boxes(start_box, end_box, num_frames):
         interpolated_boxes.append(interpolated_box)
     return interpolated_boxes
 
+
 def draw_phone_screen(frame, interpolated_box):
     global scrcpy_window, show
-    if not show: return
+    if not show:
+        return
 
     current_orientation = PhoneSensors.orientation
 
@@ -52,15 +54,8 @@ def draw_phone_screen(frame, interpolated_box):
     scrcpy_frame = np.array(screenshot)
     scrcpy_frame = cv2.cvtColor(scrcpy_frame, cv2.COLOR_RGB2BGR)
 
-    # Rotate the phone screen based on the orientation
-    rotation_angle = 90 - np.degrees(np.arctan2(current_orientation['y'], current_orientation['x']))
-    rotation_matrix = cv2.getRotationMatrix2D((width // 2, height // 2), rotation_angle, 1)
-    rotated_phone_screen = cv2.warpAffine(scrcpy_frame, rotation_matrix, (width, height))
-
-    # Calculate the size of the maximum bounding box
+    # Resize the phone screen to fit within the constant bounding box
     max_box_size = max(box_w, box_h)
-
-    # Resize the rotated phone screen to fit within the constant bounding box
     aspect_ratio = width / height
     if max_box_size / max_box_size > aspect_ratio:
         new_w = int(max_box_size * aspect_ratio)
@@ -68,18 +63,36 @@ def draw_phone_screen(frame, interpolated_box):
     else:
         new_w = max_box_size
         new_h = int(max_box_size / aspect_ratio)
-    resized_phone_screen = cv2.resize(rotated_phone_screen, (new_w, new_h))
+    resized_phone_screen = cv2.resize(scrcpy_frame, (new_w, new_h))
 
     # Update the position to ensure the resized overlay stays centered
     center_x = x + (box_w - new_w) // 2
     center_y = y + (box_h - new_h) // 2
 
-    # Ensure the overlay is within the frame boundaries
-    x1, y1 = max(center_x, 0), max(center_y, 0)
-    x2, y2 = min(center_x + new_w, frame.shape[1]), min(center_y + new_h, frame.shape[0])
-    overlay = resized_phone_screen[y1 - center_y:y2 - center_y, x1 - center_x:x2 - center_x]
+    # Rotate the frame based on the orientation
+    rotation_angle = 90 - np.degrees(np.arctan2(current_orientation['y'], current_orientation['x']))
+    rotation_matrix = cv2.getRotationMatrix2D((frame.shape[1] // 2, frame.shape[0] // 2), -rotation_angle, 1)
+    rotated_frame = cv2.warpAffine(frame, rotation_matrix, (frame.shape[1], frame.shape[0]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
-    frame[y1:y2, x1:x2] = overlay
+    # Rotate the center point of the bounding box
+    center_point = np.array([center_x, center_y, 1])
+    rotated_center = rotation_matrix.dot(center_point)
+
+    # Adjust the position based on the rotated center
+    x1 = max(int(rotated_center[0] - new_w / 2), 0)
+    y1 = max(int(rotated_center[1] - new_h / 2), 0)
+    x2 = min(x1 + new_w, frame.shape[1])
+    y2 = min(y1 + new_h, frame.shape[0])
+
+    # Place the rotated overlay onto the rotated frame
+    rotated_frame[y1:y2, x1:x2] = resized_phone_screen[0:y2-y1, 0:x2-x1]
+
+    # Rotate the frame back to the original orientation
+    rotation_matrix = cv2.getRotationMatrix2D((frame.shape[1] // 2, frame.shape[0] // 2), rotation_angle, 1)
+    rotated_frame = cv2.warpAffine(rotated_frame, rotation_matrix, (frame.shape[1], frame.shape[0]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+
+    # Update the frame with the rotated frame
+    frame[:] = rotated_frame[:]
 
 def toggle_show():
     global show
@@ -102,6 +115,7 @@ def main():
 
     for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True):
         frame = result.orig_img
+
         class_ids = result.boxes.cls.cpu().numpy().astype(int)
         boxes_xywh = result.boxes.xywh.cpu().numpy()
         new_detection = None
