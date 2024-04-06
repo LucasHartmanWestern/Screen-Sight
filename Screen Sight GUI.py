@@ -5,12 +5,12 @@ import pygetwindow as gw
 from PIL import ImageGrab
 import PhoneSensors
 import torch
-import math
 
 print(torch.__version__)
 print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
 
+detected = False
 show = False
 
 # Find the scrcpy window
@@ -113,6 +113,8 @@ def mouse_callback(event, x, y, flags, param):
             toggle_show()
 
 def main():
+    global detected
+
     frame_count = 0
     last_visual_detection = None
     current_visual_detection = None
@@ -147,6 +149,9 @@ def main():
                 current_visual_detection = None
 
         if current_visual_detection:
+
+            detected = True
+
             if frame_count < update_interval and last_visual_detection:
                 alpha = frame_count / update_interval
                 interpolated_box = {
@@ -160,9 +165,14 @@ def main():
                 draw_phone_screen(frame, current_visual_detection)
             frame_count += 1
 
-        button_text = "Hide Phone" if show else "Show Phone"
-        cv2.rectangle(frame, (10, 10), (110, 50), (255, 255, 255), -1)
-        cv2.putText(frame, button_text, (15, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+        else:
+            detected = False
+
+
+        if detected:
+            button_text = "Hide Phone" if show else "Show Phone"
+            cv2.rectangle(frame, (10, 10), (110, 50), (255, 255, 255), -1)
+            cv2.putText(frame, button_text, (15, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
         cv2.imshow('Frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
