@@ -1,0 +1,6 @@
+opencv-python
+ultralytics-yolov5
+numpy
+pygetwindow
+Pillow
+websocket-client

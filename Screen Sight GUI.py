@@ -1,9 +1,14 @@
 import cv2
 from ultralytics import YOLO
-import supervision as sv
 import numpy as np
 import pygetwindow as gw
 from PIL import ImageGrab
+import PhoneSensors
+import torch
+
+print(torch.__version__)
+print(torch.cuda.is_available())
+print(torch.cuda.get_device_name(0))
 
 show = False
 
@@ -33,6 +38,10 @@ def interpolate_boxes(start_box, end_box, num_frames):
 def draw_phone_screen(frame, interpolated_box):
     global scrcpy_window, show
     if not show: return
+
+    current_orientation = PhoneSensors.orientation
+    print("Phone orientation:", current_orientation)
+
     box_w = int(interpolated_box['w'])
     box_h = int(interpolated_box['h'])
     x = int(interpolated_box['x'])
@@ -118,6 +127,9 @@ def main():
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
+    phone_url = 'ws://pixel-8-pro.lan:8080'
+    PhoneSensors.start_sensor_thread(phone_url)
+
     try:
         main()
     except KeyboardInterrupt:
