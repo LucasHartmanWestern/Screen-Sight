@@ -72,10 +72,6 @@ def main():
     # Load the YOLO model
     model = YOLO("yolov8l.pt")
 
-    # Create a named window and set a mouse callback for it
-    cv2.namedWindow('Frame')
-    cv2.setMouseCallback('Frame', mouse_callback)
-
     # Iterate over the tracking results from the YOLO model
     for result in model.track(source=0, show=False, verbose=False, stream=True, agnostic_nms=True):
         # Get the original frame from the result
@@ -152,6 +148,7 @@ def main():
             cv2.putText(frame, button_text, (15, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
         # Display the frame in the window
         cv2.imshow('Frame', frame)
+        cv2.setMouseCallback('Frame', mouse_callback)
         # Check for the 'q' key press to quit the loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
