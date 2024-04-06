@@ -75,7 +75,7 @@ def draw_phone_screen(frame, interpolated_box):
     rotated_frame = cv2.warpAffine(frame, rotation_matrix, (frame.shape[1], frame.shape[0]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
     # Rotate the center point of the bounding box
-    center_point = np.array([center_x, center_y, 1])
+    center_point = np.array([center_x + new_w / 2, center_y + new_h / 2, 1])
     rotated_center = rotation_matrix.dot(center_point)
 
     # Adjust the position based on the rotated center
