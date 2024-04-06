@@ -48,6 +48,7 @@ def draw_phone_screen(frame, interpolated_box):
     box_h = int(interpolated_box['h'])
     x = int(interpolated_box['x'])
     y = int(interpolated_box['y'])
+
     left, top, width, height = scrcpy_window.box
     bbox = (left, top, left + width, top + height)
     screenshot = ImageGrab.grab(bbox)
@@ -91,8 +92,16 @@ def draw_phone_screen(frame, interpolated_box):
     rotation_matrix = cv2.getRotationMatrix2D((frame.shape[1] // 2, frame.shape[0] // 2), rotation_angle, 1)
     rotated_frame = cv2.warpAffine(rotated_frame, rotation_matrix, (frame.shape[1], frame.shape[0]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
-    # Update the frame with the rotated frame
-    frame[:] = rotated_frame[:]
+    # Define the padding size
+    padding = 15
+
+    top_bound = max(y - padding, 0)
+    bottom_bound = min(y + box_h + padding, frame.shape[0])
+    left_bound = max(x - padding, 0)
+    right_bound = min(x + box_w + padding, frame.shape[1])
+
+    # Copy the region inside the box with padding from rotated_frame to frame
+    frame[top_bound:bottom_bound, left_bound:right_bound] = rotated_frame[top_bound:bottom_bound, left_bound:right_bound]
 
 def toggle_show():
     global show
@@ -116,6 +125,8 @@ def main():
     for result in model.track(source=1, show=False, verbose=False, stream=True, agnostic_nms=True):
         frame = result.orig_img
 
+        frame = cv2.resize(frame, (1280, 960))
+
         class_ids = result.boxes.cls.cpu().numpy().astype(int)
         boxes_xywh = result.boxes.xywh.cpu().numpy()
         new_detection = None
@@ -124,7 +135,7 @@ def main():
                 x, y, w, h = box
                 x -= w / 2
                 y -= h / 2
-                new_detection = {'w': w, 'h': h, 'x': x, 'y': y}
+                new_detection = {'w': w * 2, 'h': h * 2, 'x': x * 2, 'y': y * 2}
                 break
 
         if new_detection:
