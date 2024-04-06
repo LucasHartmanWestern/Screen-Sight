@@ -4,3 +4,4 @@ numpy
 pygetwindow
 Pillow
 websocket-client
+threading
