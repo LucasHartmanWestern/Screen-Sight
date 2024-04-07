@@ -15,6 +15,9 @@ Also note that the demo currently only works with Android devices.
 - Dhruv Sagre (<a href='mailto: dsagre@uwo.ca'>dsagre@uwo.ca</a>),
 - Ethan Pigou (<a href='mailto: epigou@uwo.ca'>epigou@uwo.ca</a>)
 
+Video Demo and Installation tutorial:
+https://youtu.be/cNDiibXy4fQ
+
 ## 1. Installation Instructions
 
 To use Screen Sight, there are 4 things you need to have:
