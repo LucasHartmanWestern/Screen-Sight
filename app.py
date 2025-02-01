@@ -1,3 +1,7 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+import time
 import cv2
 from ultralytics import YOLO
 import pygetwindow as gw
@@ -69,15 +73,28 @@ def main():
     last_visual_detection = None
     current_visual_detection = None
     update_interval = 3
+
     # Load the YOLO model
-    model = YOLO("yolov8l.pt")
+    model = YOLO("yolo11n.pt")
+
+    # Initialize times for model processing
+    preprocess_time = 0.0
+    inference_time = 0.0
+    postprocess_time = 0.0
 
     # Iterate over the tracking results from the YOLO model
     for result in model.track(source=0, show=False, verbose=False, stream=True, agnostic_nms=True):
+
         # Get the original frame from the result
         frame = result.orig_img
+
         # Resize the frame
         frame = cv2.resize(frame, (1280, 960))
+
+        # Track model processing times
+        preprocess_time += result.speed.get('preprocess', 0)
+        inference_time += result.speed.get('inference', 0)
+        postprocess_time += result.speed.get('postprocess', 0)
 
         # Get the class IDs and bounding boxes from the result
         class_ids = result.boxes.cls.cpu().numpy().astype(int)

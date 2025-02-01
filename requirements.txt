@@ -5,3 +5,6 @@ pygetwindow
 Pillow
 websocket-client
 thread
+pycocotools
+torchmetrics
+torchvision
