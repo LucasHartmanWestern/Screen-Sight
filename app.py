@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import time
 import cv2
 from ultralytics import YOLO
@@ -74,35 +77,24 @@ def main():
     # Load the YOLO model
     model = YOLO("yolo11n.pt")
 
-    # Variables for FPS calculation
-    prev_frame_time = 0.0
-    new_frame_time = 0.0
-
-    # Variables for avg fps calculation
-    avg_fps = 0.0
-    avg_fps_frame_count = 0
+    # Initialize times for model processing
+    preprocess_time = 0.0
+    inference_time = 0.0
+    postprocess_time = 0.0
 
     # Iterate over the tracking results from the YOLO model
     for result in model.track(source=0, show=False, verbose=False, stream=True, agnostic_nms=True):
 
         # Get the original frame from the result
         frame = result.orig_img
-        avg_fps_frame_count += 1
 
         # Resize the frame
         frame = cv2.resize(frame, (1280, 960))
 
-         # Track model processing times
-        preprocess_time += result.speed['preprocess']
-        inference_time += result.speed['inference']
-        postprocess_time += result.speed['postprocess']
-
-        # Calculate FPS
-        new_frame_time = time.time()
-        fps = 1/(new_frame_time-prev_frame_time)
-        prev_frame_time = new_frame_time
-        cv2.putText(frame, f"FPS: {fps:.1f}", (1750, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
-        avg_fps += fps
+        # Track model processing times
+        preprocess_time += result.speed.get('preprocess', 0)
+        inference_time += result.speed.get('inference', 0)
+        postprocess_time += result.speed.get('postprocess', 0)
 
         # Get the class IDs and bounding boxes from the result
         class_ids = result.boxes.cls.cpu().numpy().astype(int)
@@ -177,12 +169,6 @@ def main():
         # Check for the 'q' key press to quit the loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
-    # Calculate averages
-    print(f"Average FPS: {avg_fps/avg_fps_frame_count:.1f} frames per second")
-    print(f"Average Preprocessing Time: {preprocess_time/avg_fps_frame_count:.1f} ms")
-    print(f"Average Inference Time: {inference_time/avg_fps_frame_count:.1f} ms")
-    print(f"Average Postprocessing Time: {postprocess_time/avg_fps_frame_count:.1f} ms")
 
     # Destroy all OpenCV windows
     cv2.destroyAllWindows()
