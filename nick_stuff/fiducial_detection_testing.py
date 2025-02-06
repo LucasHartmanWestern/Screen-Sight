@@ -3,21 +3,11 @@ import numpy as np
 import torch
 
 
-def gen_aruco_marker(aruco_dict, marker_id=23, marker_size=200):
-    full_image = np.ones((marker_size+100, marker_size+100), dtype=np.uint8) * 255
-    marker_image = np.zeros((marker_size, marker_size), dtype=np.uint8)
-    marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size, marker_image, 1)
-    full_image[50:50+marker_size, 50:50+marker_size] = marker_image
-    cv2.imwrite(f"marker_id{marker_id}_sz{marker_size}.png", full_image)
-    return full_image
-
-
 def main():
     # Initialize the ArUco model
     aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     aruco_params =  cv2.aruco.DetectorParameters()
     aruco_detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
-    # marker_im = gen_aruco_marker(aruco_dict)
 
     # Initialize video capture from default camera (usually 0)
     cap = cv2.VideoCapture(0)
