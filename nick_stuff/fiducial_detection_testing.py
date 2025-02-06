@@ -3,11 +3,13 @@ import numpy as np
 import torch
 
 
-def gen_aruco_marker(aruco_dict, marker_id=23, marker_size=250):
-    markerImage = np.zeros((marker_size, marker_size), dtype=np.uint8)
-    markerImage = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size, markerImage, 1)
-    cv2.imwrite(f"marker_id{marker_id}_sz{marker_size}.png", markerImage)
-    return markerImage
+def gen_aruco_marker(aruco_dict, marker_id=23, marker_size=200):
+    full_image = np.ones((marker_size+100, marker_size+100), dtype=np.uint8) * 255
+    marker_image = np.zeros((marker_size, marker_size), dtype=np.uint8)
+    marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size, marker_image, 1)
+    full_image[50:50+marker_size, 50:50+marker_size] = marker_image
+    cv2.imwrite(f"marker_id{marker_id}_sz{marker_size}.png", full_image)
+    return full_image
 
 
 def main():
