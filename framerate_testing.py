@@ -22,15 +22,15 @@ def main():
         print("Model is running on device:", model_device)
     except Exception as e:
         print("Could not determine model device:", e)
-    
-    # Use OpenCV tick counts to compute FPS faster than time.time() and initialize for average FPS calculation
-    init_tick = cv2.getTickCount()
-    frame_counter = 0
 
     # Variables for model speeds calculations (if needed later)
     preprocess_time = 0.0
     inference_time = 0.0
     postprocess_time = 0.0
+
+    # Use OpenCV tick counts to compute FPS faster than time.time() and initialize for average FPS calculation
+    init_tick = cv2.getTickCount()
+    frame_counter = 0
 
     # Iterate over the tracking results from the YOLO model
     for result in model.track(source=0, show=False, verbose=False, stream=True, agnostic_nms=True):
@@ -59,9 +59,8 @@ def main():
             detection = [(int(x - w/2), int(y - h/2)), (int(x + w/2), int(y + h/2))]
 
         # Overlay phone detection status on the frame using average FPS
-        note_text = f"Phone detected: {avg_fps:.1f} fps" if detection else "Phone not detected"
+        note_text = f"Phone detected: {avg_fps:.1f} fps" if detection else f"Phone not detected: {avg_fps:.1f} fps"
         note_color = (0, 255, 0) if detection else (0, 0, 255)
-
         cv2.putText(frame, note_text, (15, 35), cv2.FONT_HERSHEY_SIMPLEX, 1, note_color, 2, cv2.LINE_AA)
 
         # Draw the phone bounding box if detection exists
