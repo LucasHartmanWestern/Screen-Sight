@@ -20,9 +20,11 @@ def main():
 
     # Use OpenCV tick counts to compute FPS faster than time.time() and initialize for average FPS calculation
     frame_counter = 0
+    elapsed_time = 0.0
     init_tick = cv2.getTickCount()
 
-    while True:
+    # Run for 30 seconds
+    while elapsed_time < 30.0:
         # Capture frame-by-frame
         ret, frame = cap.read()
         
@@ -76,7 +78,9 @@ def main():
     print(f"Avg FPS: {(frame_counter / elapsed_time):.2f}") # frames per second
     print(f"Avg DPS: {(detection_counter / elapsed_time):.2f}") # detections per second
     print(f"Total num detections: {detection_counter}")
-    
+    print(f"Total num frames: {frame_counter}")
+    print(f"Total time: {elapsed_time:.2f} seconds")
+
     # Release resources
     cap.release()
     cv2.destroyAllWindows()
