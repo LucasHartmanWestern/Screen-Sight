@@ -1,0 +1,28 @@
+
+----- File name: op25_dark_clean.mp4 -----
+Avg FPS: 30.73
+Avg DPS: 28.82
+Total num frames: 851
+Total num detections: 798
+Total time: 27.69 seconds
+
+----- File name: op50_dark_clean.mp4 -----
+Avg FPS: 32.79
+Avg DPS: 32.90
+Total num frames: 882
+Total num detections: 885
+Total time: 26.90 seconds
+
+----- File name: op75_dark_clean.mp4 -----
+Avg FPS: 32.26
+Avg DPS: 32.55
+Total num frames: 874
+Total num detections: 882
+Total time: 27.10 seconds
+
+----- File name: op100_dark_clean.mp4 -----
+Avg FPS: 33.47
+Avg DPS: 33.86
+Total num frames: 869
+Total num detections: 879
+Total time: 25.96 seconds

@@ -1,0 +1,28 @@
+
+----- File name: op25_dark_noisy.mp4 -----
+Avg FPS: 73.55
+Avg DPS: 26.54
+Total num frames: 837
+Total num detections: 302
+Total time: 11.38 seconds
+
+----- File name: op50_dark_noisy.mp4 -----
+Avg FPS: 74.55
+Avg DPS: 34.01
+Total num frames: 881
+Total num detections: 402
+Total time: 11.82 seconds
+
+----- File name: op75_dark_noisy.mp4 -----
+Avg FPS: 74.78
+Avg DPS: 30.49
+Total num frames: 851
+Total num detections: 347
+Total time: 11.38 seconds
+
+----- File name: op100_dark_noisy.mp4 -----
+Avg FPS: 75.35
+Avg DPS: 33.58
+Total num frames: 846
+Total num detections: 377
+Total time: 11.23 seconds

@@ -1,0 +1,28 @@
+
+----- File name: op25_light_noisy.mp4 -----
+Avg FPS: 60.82
+Avg DPS: 34.93
+Total num frames: 888
+Total num detections: 510
+Total time: 14.60 seconds
+
+----- File name: op50_light_noisy.mp4 -----
+Avg FPS: 62.89
+Avg DPS: 56.47
+Total num frames: 882
+Total num detections: 792
+Total time: 14.02 seconds
+
+----- File name: op75_light_noisy.mp4 -----
+Avg FPS: 62.02
+Avg DPS: 57.93
+Total num frames: 865
+Total num detections: 808
+Total time: 13.95 seconds
+
+----- File name: op100_light_noisy.mp4 -----
+Avg FPS: 62.98
+Avg DPS: 54.39
+Total num frames: 888
+Total num detections: 767
+Total time: 14.10 seconds

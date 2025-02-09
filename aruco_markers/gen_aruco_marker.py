@@ -9,7 +9,7 @@ def create_marker(aruco_dict, marker_id=23, marker_size=200, opacity=0.75):
     marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size, marker_image, 1)
     full_image[50:50+marker_size, 50:50+marker_size] = marker_image
     full_image[full_image == 0] += int(255 * (1 - opacity))
-    cv2.imwrite(f"./nick_stuff/marker_id{marker_id}_sz{marker_size}_op{int(opacity*100)}.png", full_image)
+    cv2.imwrite(f"./aurco_markers/marker_id{marker_id}_sz{marker_size}_op{int(opacity*100)}.png", full_image)
     return full_image
 
 

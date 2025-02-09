@@ -1,0 +1,28 @@
+
+----- File name: op25_light_clean.mp4 -----
+Avg FPS: 89.14
+Avg DPS: 23.98
+Total num frames: 896
+Total num detections: 241
+Total time: 10.05 seconds
+
+----- File name: op50_light_clean.mp4 -----
+Avg FPS: 88.73
+Avg DPS: 83.87
+Total num frames: 896
+Total num detections: 847
+Total time: 10.10 seconds
+
+----- File name: op75_light_clean.mp4 -----
+Avg FPS: 87.76
+Avg DPS: 87.05
+Total num frames: 863
+Total num detections: 856
+Total time: 9.83 seconds
+
+----- File name: op100_light_clean.mp4 -----
+Avg FPS: 88.03
+Avg DPS: 86.62
+Total num frames: 876
+Total num detections: 862
+Total time: 9.95 seconds

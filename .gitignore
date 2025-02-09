@@ -155,3 +155,9 @@ cython_debug/
 .idea/modules.xml
 .idea/Screen-Sight.iml
 .idea/vcs.xml
+
+# Video files
+*.mp4
+
+# Mac stuff
+.DS_Store
