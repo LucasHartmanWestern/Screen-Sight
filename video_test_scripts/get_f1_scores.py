@@ -2,6 +2,17 @@ import os
 import pandas as pd
 import numpy as np
 
+'''
+EXAMPLE:
+882 frames, 894 detections
+
+tp = 894
+fp = 894 - 882 = 12
+fn = 882 - 894 = -12 -> 0
+
+tp / (tp + 0.5 * (fp + fn)) = f1_score
+894 / (894 + 0.5 * (12 + 0)) = 0.986
+'''
 
 if __name__ == '__main__':
 
@@ -22,8 +33,8 @@ if __name__ == '__main__':
     f1_scores = []
     for index, row in df.iterrows():
         tp = row['Detections']
-        fp = row['Frames'] - row['Detections'] if row['Detections'] > row['Frames'] else 0
-        fn = row['Frames'] - row['Detections'] if row['Detections'] < row['Frames'] else 0
+        fp = row['Detections'] - row['Frames'] if row['Detections'] > row['Frames'] else 0
+        fn = row['Frames'] - row['Detections'] if row['Frames'] > row['Detections'] else 0
         f1_score = np.round(tp / (tp + (0.5 * (fp + fn))), 2)
         f1_scores.append(f1_score)
     df['F1Score'] = f1_scores
