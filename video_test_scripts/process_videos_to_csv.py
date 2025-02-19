@@ -122,7 +122,7 @@ def process_with_YOLO(dataframe):
 
             results_row = [
                 model_name,
-                name,
+                name.lower(),
                 marker_opacity,
                 background_conditions,
                 lighting_conditions,
@@ -225,7 +225,7 @@ def process_with_aruco(dataframe):
             
             results_row = [
                 model_name,
-                name,
+                name.lower(),
                 marker_opacity,
                 background_conditions,
                 lighting_conditions,

@@ -49,7 +49,7 @@ def create_table(save_file="VideoResults_TABLE.csv", source_file="video_test_res
     for model in ["YOLO", "ArUco"]:
         model_df = df.loc[df['Model'] == model]
 
-        for central_unit in range(1, 4):
+        for central_unit in ["nick", "ethan", "lucas"]:
             cu_df = model_df.loc[model_df['Central Unit'] == central_unit]
             row_data = [
                 model, 
