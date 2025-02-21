@@ -20,10 +20,10 @@ if __name__ == '__main__':
     df = pd.read_csv(csv_path)
 
     # calculate the metrics
-    df['Avg FPS'] = df['Detections'] / df['Time']
+    df['Avg FPS'] = df['Frames'] / df['Time']
     df['Avg DPS'] = df['Detections'] / df['Time']
     df['Accuracy'] = df['Detections'] / df['Frames']
-    df['F1Score'] = df['Detections'] / (df['Detections'] + (0.5 * np.abs(df['Frames'] - df['Detections'])))
+    df['F1 Score'] = df['Detections'] / (df['Detections'] + (0.5 * np.abs(df['Frames'] - df['Detections'])))
 
     # round to 2 decimal places
     for col in ['Avg FPS', 'Avg DPS', 'Accuracy', 'F1 Score']:

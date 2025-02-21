@@ -39,9 +39,9 @@ def create_full_csv():
     df.to_csv(f"video_test_results/VideoResults_ALL.csv", index=False)
 
 
-def create_table(save_file="VideoResults_TABLE.csv", source_file="video_test_results/VideoResults_ALL.csv", decimal_places=2):
+def create_table(save_file="VideoResults_TABLE.csv", decimal_places=2):
     # read full results CSV file
-    df = pd.read_csv(source_file)
+    df = pd.read_csv("video_test_results/VideoResults_ALL.csv")
 
     # create new dataframe with only the columns we want
     table_df = pd.DataFrame(columns=TABLE_HEADERS)

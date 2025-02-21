@@ -3,10 +3,20 @@ import numpy as np
 import pandas as pd
 
 TABLE_HEADERS_BACKGROUND = [
-    "Model", "Background", "FPS", "FPS Std Dev", "DPS", "DPS Std Dev", "Accuracy", "Accuracy Std Dev", "F1 Score", "F1 Score Std Dev"
+    "Model", 
+    "Background", 
+    "FPS", "FPS Std Dev", 
+    # "DPS", "DPS Std Dev", 
+    # "Accuracy", "Accuracy Std Dev", 
+    "F1 Score", "F1 Score Std Dev"
 ]
 TABLE_HEADERS_LIGHTING = [
-    "Model", "Lighting", "FPS", "FPS Std Dev", "DPS", "DPS Std Dev", "Accuracy", "Accuracy Std Dev", "F1 Score", "F1 Score Std Dev"
+    "Model", 
+    "Lighting", 
+    "FPS", "FPS Std Dev", 
+    # "DPS", "DPS Std Dev", 
+    # "Accuracy", "Accuracy Std Dev", 
+    "F1 Score", "F1 Score Std Dev"
 ]
 
 def create_table(table_type, source_file="live_test_results/LiveResults_FULL.csv", decimal_places=2):
@@ -42,10 +52,10 @@ def create_table(table_type, source_file="live_test_results/LiveResults_FULL.csv
                     val, 
                     np.round(model_df["Avg FPS"].mean(), decimal_places), 
                     np.round(model_df["Avg FPS"].std(), decimal_places), 
-                    np.round(model_df["Avg DPS"].mean(), decimal_places), 
-                    np.round(model_df["Avg DPS"].std(), decimal_places), 
-                    np.round(model_df["Accuracy"].mean(), decimal_places), 
-                    np.round(model_df["Accuracy"].std(), decimal_places), 
+                    # np.round(model_df["Avg DPS"].mean(), decimal_places), 
+                    # np.round(model_df["Avg DPS"].std(), decimal_places), 
+                    # np.round(model_df["Accuracy"].mean(), decimal_places), 
+                    # np.round(model_df["Accuracy"].std(), decimal_places), 
                     np.round(model_df["F1 Score"].mean(), decimal_places), 
                     np.round(model_df["F1 Score"].std(), decimal_places)
                 ]
@@ -59,10 +69,10 @@ def create_table(table_type, source_file="live_test_results/LiveResults_FULL.csv
                         val, 
                         np.round(opacity_df["Avg FPS"].mean(), decimal_places), 
                         np.round(opacity_df["Avg FPS"].std(), decimal_places), 
-                        np.round(opacity_df["Avg DPS"].mean(), decimal_places), 
-                        np.round(opacity_df["Avg DPS"].std(), decimal_places), 
-                        np.round(opacity_df["Accuracy"].mean(), decimal_places), 
-                        np.round(opacity_df["Accuracy"].std(), decimal_places), 
+                        # np.round(opacity_df["Avg DPS"].mean(), decimal_places), 
+                        # np.round(opacity_df["Avg DPS"].std(), decimal_places), 
+                        # np.round(opacity_df["Accuracy"].mean(), decimal_places), 
+                        # np.round(opacity_df["Accuracy"].std(), decimal_places), 
                         np.round(opacity_df["F1 Score"].mean(), decimal_places), 
                         np.round(opacity_df["F1 Score"].std(), decimal_places)
                     ]
