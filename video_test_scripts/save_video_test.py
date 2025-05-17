@@ -23,11 +23,14 @@ FILE_NAME_DARK_NOISY_75 = "op75_dark_noisy.mp4"
 FILE_NAME_DARK_NOISY_100 = "op100_dark_noisy.mp4"
 
 
-def main(fname=FILE_NAME_LIGHT_NOISY_25):
+def main(folder="videos", trial_num=2, fname=FILE_NAME_LIGHT_NOISY_25):
+    save_path = os.path.join(folder, f"trial_{trial_num}")
+    os.makedirs(save_path, exist_ok=True)
+
     cap = cv2.VideoCapture(0)  
     fourcc = cv2.VideoWriter.fourcc(*'mp4v')
     video_dims = (int(cap.get(3)), int(cap.get(4)))
-    out = cv2.VideoWriter(os.path.join("videos", fname), fourcc, 30.0, video_dims)
+    out = cv2.VideoWriter(os.path.join(save_path, fname), fourcc, 30.0, video_dims)
 	
     # Check if camera is operational
     if not cap.isOpened():
@@ -55,6 +58,6 @@ def main(fname=FILE_NAME_LIGHT_NOISY_25):
 
 if __name__ == '__main__':
     try:
-        main()
+        main(folder="videos", trial_num=3, fname=FILE_NAME_DARK_NOISY_100)
     except KeyboardInterrupt:
         cv2.destroyAllWindows()

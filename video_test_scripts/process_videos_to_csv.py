@@ -1,3 +1,4 @@
+import argparse
 import os
 import cv2
 import time
@@ -32,33 +33,46 @@ VIDEO_FILES_3 = [FILE_NAME_LIGHT_NOISY_25, FILE_NAME_LIGHT_NOISY_50, FILE_NAME_L
 VIDEO_FILES_4 = [FILE_NAME_DARK_NOISY_25, FILE_NAME_DARK_NOISY_50, FILE_NAME_DARK_NOISY_75, FILE_NAME_DARK_NOISY_100]
 
 CSV_HEADERS = [
-    "Model", "Central Unit", "Marker Opacity", "Background", "Lighting",
+    "Trial", "Model", "Central Unit", "Marker Opacity", "Background", "Lighting",
     "TP", "FP", "FN", "Frames", "Time", "Avg FPS", "Avg DPS", "Accuracy", "F1 Score"
 ]
+
+
+def check_video_paths():
+    print("Checking video paths...")
+    for trial in range(1, 4):
+        for video_set in [VIDEO_FILES_1, VIDEO_FILES_2, VIDEO_FILES_3, VIDEO_FILES_4]:
+            for fname in video_set:
+                video_path = os.path.join("videos", f"trial_{trial}", fname)
+                if not os.path.exists(video_path):
+                    print(f"Error: Video file {video_path} does not exist, please ensure all videos are present in the videos folder")
+                    return False
+    print("All video paths checked successfully.")
+    return True
     
 
-def process_with_YOLO(dataframe):
+def process_with_YOLO(dataframe, tester_name, trial_num):
     model = YOLO("yolo11n.pt")
     model_name = "YOLO"
 
     for video_set_num in range(1, 5):
         if video_set_num == 1:
-            tqdm_desc = "[Part 1/8] YOLO Processing  "
+            tqdm_desc = f"[Part {1+((trial_num-1)*8)}/24] YOLO Processing  "
             video_files_set = VIDEO_FILES_1
             background_conditions = "Clean"
             lighting_conditions = "Bright"
         elif video_set_num == 2:
-            tqdm_desc = "[Part 2/8] YOLO Processing  "
+            tqdm_desc = f"[Part {2+((trial_num-1)*8)}/24] YOLO Processing  "
             video_files_set = VIDEO_FILES_2
             background_conditions = "Clean"
             lighting_conditions = "Dark"
         elif video_set_num == 3:
-            tqdm_desc = "[Part 3/8] YOLO Processing  "
+            tqdm_desc = f"[Part {3+((trial_num-1)*8)}/24] YOLO Processing  "
             video_files_set = VIDEO_FILES_3
             background_conditions = "Noisy"
             lighting_conditions = "Bright"
         elif video_set_num == 4:
-            tqdm_desc = "[Part 4/8] YOLO Processing  "
+            tqdm_desc = f"[Part {4+((trial_num-1)*8)}/24] YOLO Processing  "
             video_files_set = VIDEO_FILES_4
             background_conditions = "Noisy"
             lighting_conditions = "Dark"
@@ -70,11 +84,12 @@ def process_with_YOLO(dataframe):
         for i in tqdm(range(len(video_files_set)), desc=tqdm_desc):
             marker_opacity = 25 + (i * 25)
             fname = video_files_set[i]
+            video_path = os.path.join("videos", f"trial_{trial_num}", fname)
 
             # read video file
-            cap = cv2.VideoCapture(os.path.join("videos", fname))
+            cap = cv2.VideoCapture(video_path)
             if not cap.isOpened():
-                print(f"Error: Could not open video file: {fname}")
+                print(f"Error: Could not open video file: {video_path}")
                 return
             
             # total frames in video
@@ -121,8 +136,9 @@ def process_with_YOLO(dataframe):
             f1 = true_positives / (true_positives + (0.5 * (false_positives + false_negatives)))
 
             results_row = [
+                trial_num,
                 model_name,
-                name.lower(),
+                tester_name.lower(),
                 marker_opacity,
                 background_conditions,
                 lighting_conditions,
@@ -143,7 +159,7 @@ def process_with_YOLO(dataframe):
     return dataframe
 
 
-def process_with_aruco(dataframe):
+def process_with_aruco(dataframe, tester_name, trial_num):
     aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     aruco_params =  cv2.aruco.DetectorParameters()
     aruco_detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
@@ -151,22 +167,22 @@ def process_with_aruco(dataframe):
 
     for video_set_num in range(1, 5):
         if video_set_num == 1:
-            tqdm_desc = "[Part 5/8] ArUco Processing "
+            tqdm_desc = f"[Part {5+((trial_num-1)*8)}/24] ArUco Processing "
             video_files_set = VIDEO_FILES_1
             background_conditions = "Clean"
             lighting_conditions = "Bright"
         elif video_set_num == 2:
-            tqdm_desc = "[Part 6/8] ArUco Processing "
+            tqdm_desc = f"[Part {6+((trial_num-1)*8)}/24] ArUco Processing "
             video_files_set = VIDEO_FILES_2
             background_conditions = "Clean"
             lighting_conditions = "Dark"
         elif video_set_num == 3:
-            tqdm_desc = "[Part 7/8] ArUco Processing "
+            tqdm_desc = f"[Part {7+((trial_num-1)*8)}/24] ArUco Processing "
             video_files_set = VIDEO_FILES_3
             background_conditions = "Noisy"
             lighting_conditions = "Bright"
         elif video_set_num == 4:
-            tqdm_desc = "[Part 8/8] ArUco Processing "
+            tqdm_desc = f"[Part {8+((trial_num-1)*8)}/24] ArUco Processing "
             video_files_set = VIDEO_FILES_4
             background_conditions = "Noisy"
             lighting_conditions = "Dark"
@@ -178,11 +194,12 @@ def process_with_aruco(dataframe):
         for i in tqdm(range(len(video_files_set)), desc=tqdm_desc):
             marker_opacity = 25 + (i * 25)
             fname = video_files_set[i]
+            video_path = os.path.join("videos", f"trial_{trial_num}", fname)
 
             # read video file
-            cap = cv2.VideoCapture(os.path.join("videos", fname))
+            cap = cv2.VideoCapture(video_path)
             if not cap.isOpened():
-                print(f"Error: Could not open video file: {fname}")
+                print(f"Error: Could not open video file: {video_path}")
                 return
             
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -224,8 +241,9 @@ def process_with_aruco(dataframe):
             f1 = true_positives / (true_positives + (0.5 * (false_positives + false_negatives)))
             
             results_row = [
+                trial_num,
                 model_name,
-                name.lower(),
+                tester_name.lower(),
                 marker_opacity,
                 background_conditions,
                 lighting_conditions,
@@ -247,12 +265,22 @@ def process_with_aruco(dataframe):
 
 
 if __name__ == '__main__':
-    # Must enter your name
-    name = ""
+    # parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", type=str, required=True, help="Name of the person running the script")
+    args = parser.parse_args()
+    name = args.n.lower()
+    assert name in ["ethan", "lucas", "nick",], f"Incorrect name argument: {name}. Must be one of: ethan, lucas, nick."
+
+    # check video paths
+    assert check_video_paths(), "Video paths check failed, please ensure all videos are present in the videos folder"
 
     # process videos
-    assert name.lower() in ["ethan", "lucas", "nick",], "Must enter your name on line 251!"
     df = pd.DataFrame(columns=CSV_HEADERS)
-    df = process_with_YOLO(df)
-    df = process_with_aruco(df)
-    df.to_csv(f"video_test_results/VideoResults_{name.lower()}.csv", index=False)
+    for trial in range(1, 4):
+        df = process_with_YOLO(df, tester_name=name, trial_num=trial)
+        df = process_with_aruco(df, tester_name=name, trial_num=trial)
+    
+    # save completed dataframe to CSV file
+    os.makedirs("results", exist_ok=True)
+    df.to_csv(f"results/VideoResults_{name.lower()}.csv", index=False)
