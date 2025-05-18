@@ -16,9 +16,9 @@ F is Frames
 if __name__ == '__main__':
 
     # open the main csv file
-    csv_path = "live_test_results/LiveResults.csv"
-    df = pd.read_csv(csv_path)
-
+    csv_path = "live_test_results/LiveResults (UPDATED with 5 RUNS).csv"
+    df = pd.read_csv(csv_path, header=0, delimiter='\t')
+    
     # calculate the metrics
     df['Avg FPS'] = df['Frames'] / df['Time']
     df['Avg DPS'] = df['Detections'] / df['Time']
@@ -31,5 +31,5 @@ if __name__ == '__main__':
 
     # save to a new csv file
     print(df.head())
-    df.to_csv('live_test_results/LiveResults_FULL.csv', index=False)
+    df.to_csv('live_test_results/LiveResults_FULL (UPDATED with 5 RUNS).csv', index=False)
 

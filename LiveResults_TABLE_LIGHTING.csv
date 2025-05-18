@@ -1,11 +1,11 @@
 Model,Lighting,FPS,FPS Std Dev,F1 Score,F1 Score Std Dev
-YOLO,Bright,27.36,6.0,0.87,0.14
-ArUco 25%,Bright,53.43,5.66,0.07,0.1
-ArUco 50%,Bright,53.69,6.29,0.51,0.07
-ArUco 75%,Bright,52.04,6.81,0.5,0.1
-ArUco 100%,Bright,52.8,6.7,0.51,0.07
-YOLO,Dark,31.04,6.99,0.86,0.09
-ArUco 25%,Dark,55.35,5.23,0.34,0.23
-ArUco 50%,Dark,56.26,3.59,0.46,0.07
-ArUco 75%,Dark,56.12,4.16,0.53,0.12
-ArUco 100%,Dark,54.62,4.91,0.54,0.05
+YOLO,Bright,26.39,4.73,0.8,0.16
+ArUco 25%,Bright,53.87,4.95,0.15,0.13
+ArUco 50%,Bright,52.72,6.96,0.47,0.1
+ArUco 75%,Bright,51.99,6.72,0.44,0.14
+ArUco 100%,Bright,52.11,5.75,0.43,0.16
+YOLO,Dark,33.09,11.09,0.69,0.25
+ArUco 25%,Dark,50.89,15.71,0.32,0.23
+ArUco 50%,Dark,56.73,3.15,0.36,0.16
+ArUco 75%,Dark,56.82,3.48,0.43,0.17
+ArUco 100%,Dark,55.48,4.29,0.42,0.15
