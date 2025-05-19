@@ -3,13 +3,13 @@ import numpy as np
 import pandas as pd
 
 CSV_LIST = [
-    "video_test_results/VideoResults_nick.csv",
-    "video_test_results/VideoResults_ethan.csv",
-    "video_test_results/VideoResults_lucas.csv"
+    "results/VideoResults_nick.csv",
+    "results/VideoResults_ethan.csv",
+    "results/VideoResults_lucas.csv"
 ]
 
 FULL_CSV_HEADERS = [
-    "Model", "Central Unit", "Marker Opacity", "Background", "Lighting",
+    "Trial", "Model", "Central Unit", "Marker Opacity", "Background", "Lighting",
     "TP", "FP", "FN", "Frames", "Time", "Avg FPS", "Avg DPS", "Accuracy", "F1 Score"
 ]
 
@@ -36,12 +36,12 @@ def create_full_csv():
         df = pd.concat([df, df_temp], ignore_index=True)
 
     # save main dataframe to CSV file
-    df.to_csv(f"video_test_results/VideoResults_ALL.csv", index=False)
+    df.to_csv(f"results/VideoResults_ALL.csv", index=False)
 
 
-def create_table(save_file="VideoResults_TABLE.csv", decimal_places=2):
+def create_table(save_file="results/VideoResults_TABLE.csv", decimal_places=2):
     # read full results CSV file
-    df = pd.read_csv("video_test_results/VideoResults_ALL.csv")
+    df = pd.read_csv("results/VideoResults_ALL.csv")
 
     # create new dataframe with only the columns we want
     table_df = pd.DataFrame(columns=TABLE_HEADERS)
