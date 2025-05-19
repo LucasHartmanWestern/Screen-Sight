@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from ultralytics import YOLO
+import torch
 
 FILE_NAME_LIGHT_CLEAN_25 = "op25_light_clean.mp4"
 FILE_NAME_LIGHT_CLEAN_50 = "op50_light_clean.mp4"
@@ -54,6 +55,12 @@ def check_video_paths():
 def process_with_YOLO(dataframe, tester_name, trial_num):
     model = YOLO("yolo11n.pt")
     model_name = "YOLO"
+
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    model = YOLO("yolo11n.pt")
+    model.to(device)
+
+    print(f"Using device: {device}")
 
     for video_set_num in range(1, 5):
         if video_set_num == 1:
@@ -112,7 +119,15 @@ def process_with_YOLO(dataframe, tester_name, trial_num):
                 frame_counter += 1
                 
                 # get YOLO detection results
-                result = model.predict(frame, conf=0.5, classes=[67], verbose=False)[0].boxes.xywh.cpu().numpy()
+                results = model.predict(
+                    frame,
+                    conf=0.5,
+                    classes=[67],
+                    device=device,
+                    verbose=False
+                )
+                result = results[0].boxes.xywh.cpu().numpy()
+
                 if len(result) > 1:
                     false_positives += len(result) - 1 # unanticipated detections made
                     true_positives += 1 # correct detection made
